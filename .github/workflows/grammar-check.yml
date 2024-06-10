@@ -1,0 +1,83 @@
+name: Grammar Check for JSON Schema
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  grammar-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install Gramma
+      run: npm install -g gramma
+
+    - name: Extract and check descriptions, property names, enums, and meta:enum
+      run: |
+        # Find all JSON schema files
+        find . -name "*.json" -print0 | while IFS= read -r -d '' file; do
+          # Extract descriptions
+          jq -r '..|.description? // empty' "$file" >> descriptions.txt
+          # Extract property names
+          jq -r 'paths(scalars) as $p | ($p[-1] | tostring) // empty' "$file" >> properties.txt
+          # Extract enum values
+          jq -r '..|.enum? // empty | .[]?' "$file" >> enums.txt
+          # Extract meta:enum values
+          jq -r '..|."meta:enum"? // empty | .[]?' "$file" >> meta_enum.txt
+        done
+
+        # Perform grammar check on each description
+        if [ -s descriptions.txt ]; then
+          while read -r description; do
+            if ! echo "$description" | gramma; then
+              echo "Grammar issue found in description: $description"
+              exit 1
+            fi
+          done < descriptions.txt
+        else
+          echo "No descriptions found in JSON schema files."
+        fi
+
+        # Perform grammar check on each property name
+        if [ -s properties.txt ]; then
+          while read -r property; do
+            if ! echo "$property" | gramma; then
+              echo "Grammar issue found in property name: $property"
+              exit 1
+            fi
+          done < properties.txt
+        else
+          echo "No property names found in JSON schema files."
+        fi
+
+        # Perform grammar check on each enum value
+        if [ -s enums.txt ]; then
+          while read -r enum; do
+            if ! echo "$enum" | gramma; then
+              echo "Grammar issue found in enum value: $enum"
+              exit 1
+            fi
+          done < enums.txt
+        else
+          echo "No enum values found in JSON schema files."
+        fi
+
+        # Perform grammar check on each meta:enum value
+        if [ -s meta_enum.txt ]; then
+          while read -r meta_enum; do
+            if ! echo "$meta_enum" | gramma; then
+              echo "Grammar issue found in meta:enum value: $meta_enum"
+              exit 1
+            fi
+          done < meta_enum.txt
+        else
+          echo "No meta:enum values found in JSON schema files."
+        fi
