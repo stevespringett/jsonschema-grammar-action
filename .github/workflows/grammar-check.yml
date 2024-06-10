@@ -36,8 +36,9 @@ jobs:
 
         # Perform grammar check on each description
         if [ -s descriptions.txt ]; then
+          echo "Checking descriptions..."
           while read -r description; do
-            if ! echo "$description" | gramma; then
+            if ! echo "$description" | gramma listen; then
               echo "Grammar issue found in description: $description"
               exit 1
             fi
@@ -48,8 +49,9 @@ jobs:
 
         # Perform grammar check on each property name
         if [ -s properties.txt ]; then
+          echo "Checking property names..."
           while read -r property; do
-            if ! echo "$property" | gramma; then
+            if ! echo "$property" | gramma listen; then
               echo "Grammar issue found in property name: $property"
               exit 1
             fi
@@ -60,8 +62,9 @@ jobs:
 
         # Perform grammar check on each enum value
         if [ -s enums.txt ]; then
+          echo "Checking enum values..."
           while read -r enum; do
-            if ! echo "$enum" | gramma; then
+            if ! echo "$enum" | gramma listen; then
               echo "Grammar issue found in enum value: $enum"
               exit 1
             fi
@@ -72,8 +75,9 @@ jobs:
 
         # Perform grammar check on each meta:enum value
         if [ -s meta_enum.txt ]; then
+          echo "Checking meta:enum values..."
           while read -r meta_enum; do
-            if ! echo "$meta_enum" | gramma; then
+            if ! echo "$meta_enum" | gramma listen; then
               echo "Grammar issue found in meta:enum value: $meta_enum"
               exit 1
             fi
