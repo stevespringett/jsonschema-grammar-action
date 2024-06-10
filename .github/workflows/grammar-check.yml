@@ -34,50 +34,50 @@ jobs:
           jq -r '..|."meta:enum"? // empty | .[]?' "$file" >> meta_enum.txt
         done
 
-    - name: Check descriptions for grammar issues
+    - name: Split and Check descriptions for grammar issues
       run: |
-        if [ -s descriptions.txt ]; then
-          echo "Checking descriptions..."
-          if ! gramma -m check descriptions.txt; then
-            echo "Grammar issues found in descriptions."
+        split -l 50 descriptions.txt descriptions_chunk_
+        for file in descriptions_chunk_*; do
+          echo "Checking $file..."
+          if ! gramma check -m -p "$file"; then
+            echo "Grammar issues found in $file."
             exit 1
           fi
-        else
-          echo "No descriptions found in JSON schema files."
-        fi
+          sleep 10
+        done
 
-    - name: Check property names for grammar issues
+    - name: Split and Check property names for grammar issues
       run: |
-        if [ -s properties.txt ]; then
-          echo "Checking property names..."
-          if ! gramma -m check properties.txt; then
-            echo "Grammar issues found in property names."
+        split -l 50 properties.txt properties_chunk_
+        for file in properties_chunk_*; do
+          echo "Checking $file..."
+          if ! gramma check -m -p "$file"; then
+            echo "Grammar issues found in $file."
             exit 1
           fi
-        else
-          echo "No property names found in JSON schema files."
-        fi
+          sleep 10
+        done
 
-    - name: Check enum values for grammar issues
+    - name: Split and Check enum values for grammar issues
       run: |
-        if [ -s enums.txt ]; then
-          echo "Checking enum values..."
-          if ! gramma -m check enums.txt; then
-            echo "Grammar issues found in enum values."
+        split -l 50 enums.txt enums_chunk_
+        for file in enums_chunk_*; do
+          echo "Checking $file..."
+          if ! gramma check -m -p "$file"; then
+            echo "Grammar issues found in $file."
             exit 1
           fi
-        else
-          echo "No enum values found in JSON schema files."
-        fi
+          sleep 10
+        done
 
-    - name: Check meta:enum values for grammar issues
+    - name: Split and Check meta:enum values for grammar issues
       run: |
-        if [ -s meta_enum.txt ]; then
-          echo "Checking meta:enum values..."
-          if ! gramma -m check meta_enum.txt; then
-            echo "Grammar issues found in meta:enum values."
+        split -l 50 meta_enum.txt meta_enum_chunk_
+        for file in meta_enum_chunk_*; do
+          echo "Checking $file..."
+          if ! gramma check -m -p "$file"; then
+            echo "Grammar issues found in $file."
             exit 1
           fi
-        else
-          echo "No meta:enum values found in JSON schema files."
-        fi
+          sleep 10
+        done
