@@ -1,4 +1,4 @@
-name: Grammar Check for JSON Schema
+name: English Dialect Check
 
 on:
   pull_request:
