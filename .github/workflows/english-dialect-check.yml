@@ -1,0 +1,41 @@
+name: Grammar Check for JSON Schema
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  grammar-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: American-British-English-Translator
+      run: npm install -g american-british-english-translator
+
+    - name: Extract descriptions, property names, enums, and meta:enum
+      run: |
+        # Find all JSON schema files and extract relevant data
+        find . -name "*.json" -print0 | while IFS= read -r -d '' file; do
+          # Extract descriptions
+          jq -r '..|.description? // empty' "$file" >> descriptions.txt
+          # Extract property names
+          jq -r 'paths(scalars) as $p | ($p[-1] | tostring) // empty' "$file" >> properties.txt
+          # Extract enum values
+          jq -r '..|.enum? // empty | .[]?' "$file" >> enums.txt
+          # Extract meta:enum values
+          jq -r '..|."meta:enum"? // empty | .[]?' "$file" >> meta_enum.txt
+        done
+
+    - name: Analyzing English Language (descriptions)
+      run: english-translate descriptions.txt --spelling --no-color --firstonly 
+
+    - name: Analyzing English Language (meta:enum)
+      run: english-translate meta_enum.txt --spelling --no-color --firstonly 
