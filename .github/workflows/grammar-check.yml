@@ -20,9 +20,6 @@ jobs:
     - name: Install Gramma
       run: npm install -g gramma
 
-    - name: American-British-English-Translator
-      run: npm install -g american-british-english-translator
-
     - name: Extract descriptions, property names, enums, and meta:enum
       run: |
         # Find all JSON schema files and extract relevant data
@@ -84,9 +81,3 @@ jobs:
           fi
           sleep 10
         done
-
-    - name: Analyzing English Language (descriptions)
-      run: english-translate descriptions.txt --spelling --no-color --firstonly 
-
-    - name: Analyzing English Language (meta:enum)
-      run: english-translate meta_enum.txt --spelling --no-color --firstonly 
