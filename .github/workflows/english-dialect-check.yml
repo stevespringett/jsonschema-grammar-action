@@ -40,7 +40,7 @@ jobs:
         done
 
     - name: Analyzing English Language (descriptions)
-      run: english-translate descriptions.txt --spelling --no-color --firstonly 
+      run: english-translate descriptions.txt --spelling --american --no-color --firstonly 
 
     - name: Analyzing English Language (meta:enum)
-      run: english-translate meta_enum.txt --spelling --no-color --firstonly 
+      run: english-translate meta_enum.txt --spelling --american --no-color --firstonly 
