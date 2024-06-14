@@ -20,6 +20,11 @@ jobs:
     - name: American-British-English-Translator
       run: npm install -g american-british-english-translator
 
+    - name: Retrieving CycloneDX schema
+      run: |
+        curl -O https://raw.githubusercontent.com/CycloneDX/specification/1.6-ecma/schema/bom-1.6.schema.json
+        echo "Downloaded schema"
+          
     - name: Extract descriptions, property names, enums, and meta:enum
       run: |
         # Find all JSON schema files and extract relevant data
